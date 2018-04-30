@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
+using AssemblyInformation.Model;
 
 namespace AssemblyInformation
 {
@@ -95,7 +96,7 @@ namespace AssemblyInformation
                 txtEditAndContinue.BackColor = Color.Green;
             }
 
-            frameWorkVersion.Text = assemblyInformation.FrameWorkVersion;
+            frameWorkVersion.Text = assemblyInformation.FrameworkVersion;
             txtFullName.Text = assemblyInformation.AssemblyFullName;
 
             DependencyWalker dependencyWalker = new DependencyWalker();

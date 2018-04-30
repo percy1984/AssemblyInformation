@@ -4,9 +4,9 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 
-namespace AssemblyInformation
+namespace AssemblyInformation.Model
 {
-    internal class AssemblyInformationLoader
+    public class AssemblyInformationLoader
     {
         public static readonly List<string> SystemAssemblies = new List<string>()
         {
@@ -46,7 +46,7 @@ namespace AssemblyInformation
             LoadInformation();
         }
 
-        public Assembly Assembly { get; private set; }
+        public Assembly Assembly { get; }
 
         public string AssemblyFullName { get; private set; }
 
@@ -56,32 +56,31 @@ namespace AssemblyInformation
 
         public bool EditAndContinueEnabled { get; private set; }
 
-        public string FrameWorkVersion { get; private set; }
+        public string FrameworkVersion { get; private set; }
 
         public bool IgnoreSymbolStoreSequencePoints { get; private set; }
 
         public bool JitOptimized { get; private set; }
 
+        /// <summary>
+        /// True if in Debugging mode, false if not.
+        /// </summary>
         public bool JitTrackingEnabled { get; private set; }
 
         public string TargetProcessor { get; private set; }
 
         private void LoadInformation()
         {
-            DebuggableAttribute debugAttribute =
-                Assembly.GetCustomAttributes(false).OfType<DebuggableAttribute>().FirstOrDefault();
+            var debugAttribute = Assembly.GetCustomAttributes(false).OfType<DebuggableAttribute>().FirstOrDefault();
 
             var modules = Assembly.GetModules(false);
             if (modules.Length > 0)
             {
-                PortableExecutableKinds portableExecutableKinds;
-                ImageFileMachine imageFileMachine;
-                modules[0].GetPEKind(out portableExecutableKinds, out imageFileMachine);
+                modules[0].GetPEKind(out var portableExecutableKinds, out var imageFileMachine);
 
                 foreach (PortableExecutableKinds kind in Enum.GetValues(typeof(PortableExecutableKinds)))
                 {
-                    if ((portableExecutableKinds & kind) == kind &&
-                        kind != PortableExecutableKinds.NotAPortableExecutableImage)
+                    if ((portableExecutableKinds & kind) == kind && kind != PortableExecutableKinds.NotAPortableExecutableImage)
                     {
                         if (!String.IsNullOrEmpty(AssemblyKind))
                         {
@@ -97,8 +96,7 @@ namespace AssemblyInformation
 
                 // Any CPU builds are reported as 32bit.
                 // 32bit builds will have more value for PortableExecutableKinds
-                if (imageFileMachine == ImageFileMachine.I386 &&
-                    portableExecutableKinds == PortableExecutableKinds.ILOnly)
+                if (imageFileMachine == ImageFileMachine.I386 && portableExecutableKinds == PortableExecutableKinds.ILOnly)
                 {
                     TargetProcessor = "AnyCPU";
                 }
@@ -110,11 +108,10 @@ namespace AssemblyInformation
                 JitOptimized = !debugAttribute.IsJITOptimizerDisabled;
                 IgnoreSymbolStoreSequencePoints =
                     (debugAttribute.DebuggingFlags &
-                     DebuggableAttribute.DebuggingModes.IgnoreSymbolStoreSequencePoints) !=
-                    DebuggableAttribute.DebuggingModes.None;
+                     DebuggableAttribute.DebuggingModes.IgnoreSymbolStoreSequencePoints) != DebuggableAttribute.DebuggingModes.None;
                 EditAndContinueEnabled =
-                    (debugAttribute.DebuggingFlags & DebuggableAttribute.DebuggingModes.EnableEditAndContinue) !=
-                    DebuggableAttribute.DebuggingModes.None;
+                    (debugAttribute.DebuggingFlags &
+                     DebuggableAttribute.DebuggingModes.EnableEditAndContinue) != DebuggableAttribute.DebuggingModes.None;
 
                 DebuggingFlags = debugAttribute.DebuggingFlags;
             }
@@ -130,7 +127,7 @@ namespace AssemblyInformation
 
             AssemblyFullName = Assembly.FullName;
 
-            FrameWorkVersion = Assembly.ImageRuntimeVersion;
+            FrameworkVersion = Assembly.ImageRuntimeVersion;
         }
     }
 }

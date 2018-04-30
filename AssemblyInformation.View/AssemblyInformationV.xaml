@@ -5,9 +5,11 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:AssemblyInformation.View"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewModel="clr-namespace:AssemblyInformation.ViewModel;assembly=AssemblyInformation.ViewModel"
     Title="AssemblyInformation"
     Width="800"
     Height="450"
+    d:DataContext="{d:DesignInstance viewModel:MainWindowVm}"
     mc:Ignorable="d">
     <Grid>
         <Grid.RowDefinitions>
@@ -28,10 +30,19 @@
             Grid.Row="0"
             Grid.Column="1"
             Orientation="Horizontal">
-            <CheckBox Margin="0,0,5,0" Content="Release Mode" />
-            <CheckBox Margin="0,0,5,0" Content="Optimized" />
+            <CheckBox
+                Margin="0,0,5,0"
+                Content="Release Mode"
+                IsChecked="{Binding IsBuildInReleaseMode}" />
+            <CheckBox
+                Margin="0,0,5,0"
+                Content="Optimized"
+                IsChecked="{Binding IsOptimized}" />
             <CheckBox Margin="0,0,5,0" Content="MSIL Sequencing" />
-            <CheckBox Margin="0,0,5,0" Content="Edit and Continue" />
+            <CheckBox
+                Margin="0,0,5,0"
+                Content="Edit and Continue"
+                IsChecked="{Binding IsEditAndContinueEnabled}" />
         </StackPanel>
         <Label Grid.Row="1" Grid.Column="0">Assembly Kind:</Label>
         <Label Grid.Row="2" Grid.Column="0">Target Processor:</Label>
