@@ -43,7 +43,7 @@ namespace AssemblyInformation
         public AssemblyInformationLoader(Assembly assembly)
         {
             Assembly = assembly;
-            this.LoadInformation();
+            LoadInformation();
         }
 
         public Assembly Assembly { get; private set; }
@@ -83,54 +83,54 @@ namespace AssemblyInformation
                     if ((portableExecutableKinds & kind) == kind &&
                         kind != PortableExecutableKinds.NotAPortableExecutableImage)
                     {
-                        if (!String.IsNullOrEmpty(this.AssemblyKind))
+                        if (!String.IsNullOrEmpty(AssemblyKind))
                         {
-                            this.AssemblyKind += Environment.NewLine;
+                            AssemblyKind += Environment.NewLine;
                         }
 
-                        this.AssemblyKind += "- " + PortableExecutableKindsNames[kind];
+                        AssemblyKind += "- " + PortableExecutableKindsNames[kind];
                     }
                 }
 
                 ////assemblyKindTextBox.Text = PortableExecutableKindsNames[portableExecutableKinds];
-                this.TargetProcessor = ImageFileMachineNames[imageFileMachine];
+                TargetProcessor = ImageFileMachineNames[imageFileMachine];
 
                 // Any CPU builds are reported as 32bit.
                 // 32bit builds will have more value for PortableExecutableKinds
                 if (imageFileMachine == ImageFileMachine.I386 &&
                     portableExecutableKinds == PortableExecutableKinds.ILOnly)
                 {
-                    this.TargetProcessor = "AnyCPU";
+                    TargetProcessor = "AnyCPU";
                 }
             }
 
             if (debugAttribute != null)
             {
-                this.JitTrackingEnabled = debugAttribute.IsJITTrackingEnabled;
-                this.JitOptimized = !debugAttribute.IsJITOptimizerDisabled;
-                this.IgnoreSymbolStoreSequencePoints =
+                JitTrackingEnabled = debugAttribute.IsJITTrackingEnabled;
+                JitOptimized = !debugAttribute.IsJITOptimizerDisabled;
+                IgnoreSymbolStoreSequencePoints =
                     (debugAttribute.DebuggingFlags &
                      DebuggableAttribute.DebuggingModes.IgnoreSymbolStoreSequencePoints) !=
                     DebuggableAttribute.DebuggingModes.None;
-                this.EditAndContinueEnabled =
+                EditAndContinueEnabled =
                     (debugAttribute.DebuggingFlags & DebuggableAttribute.DebuggingModes.EnableEditAndContinue) !=
                     DebuggableAttribute.DebuggingModes.None;
 
-                this.DebuggingFlags = debugAttribute.DebuggingFlags;
+                DebuggingFlags = debugAttribute.DebuggingFlags;
             }
             else
             {
                 // No DebuggableAttribute means IsJITTrackingEnabled=false, IsJITOptimizerDisabled=false, IgnoreSymbolStoreSequencePoints=false, EnableEditAndContinue=false
-                this.JitTrackingEnabled = false;
-                this.JitOptimized = true;
-                this.IgnoreSymbolStoreSequencePoints = false;
-                this.EditAndContinueEnabled = false;
-                this.DebuggingFlags = null;
+                JitTrackingEnabled = false;
+                JitOptimized = true;
+                IgnoreSymbolStoreSequencePoints = false;
+                EditAndContinueEnabled = false;
+                DebuggingFlags = null;
             }
 
-            this.AssemblyFullName = Assembly.FullName;
+            AssemblyFullName = Assembly.FullName;
 
-            this.FrameWorkVersion = Assembly.ImageRuntimeVersion;
+            FrameWorkVersion = Assembly.ImageRuntimeVersion;
         }
     }
 }

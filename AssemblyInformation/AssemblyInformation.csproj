@@ -103,7 +103,7 @@
     <Compile Include="AboutBox.Designer.cs">
       <DependentUpon>AboutBox.cs</DependentUpon>
     </Compile>
-    <Compile Include="AssemblyInformation.cs" />
+    <Compile Include="AssemblyInformationLoader.cs" />
     <Compile Include="Binary.cs" />
     <Compile Include="DependencyWalker.cs" />
     <Compile Include="FindReferringAssembliesForm.cs">
@@ -118,6 +118,7 @@
     <Compile Include="FormMain.Designer.cs">
       <DependentUpon>FormMain.cs</DependentUpon>
     </Compile>
+    <Compile Include="MachineType.cs" />
     <Compile Include="Platform.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

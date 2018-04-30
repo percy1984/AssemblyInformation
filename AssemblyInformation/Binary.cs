@@ -1,4 +1,3 @@
-using System;
 using System.Reflection;
 
 namespace AssemblyInformation
@@ -7,10 +6,10 @@ namespace AssemblyInformation
     {
         public Binary(AssemblyName assemblyName, string fullPath = null, bool isSystemBinary = false)
         {
-            this.FullName = assemblyName.FullName;
-            this.DisplayName = assemblyName.Name;
-            this.FullPath = fullPath;
-            this.IsSystemBinary = isSystemBinary;
+            FullName = assemblyName.FullName;
+            DisplayName = assemblyName.Name;
+            FullPath = fullPath;
+            IsSystemBinary = isSystemBinary;
         }
 
         public Binary(AssemblyName assemblyName, Assembly assembly)
