@@ -12,7 +12,7 @@ namespace AssemblyInformation
 
         public FindReferringAssembliesForm()
         {
-            this.InitializeComponent();
+            InitializeComponent();
             messageLabel.Text = "";
         }
 
@@ -26,12 +26,12 @@ namespace AssemblyInformation
 
         private void FindReferringAssembliesForm_Load(object sender, EventArgs e)
         {
-            (new Thread(this.FindThread)).Start();
+            (new Thread(FindThread)).Start();
         }
 
         private void cancelButton_Click(object sender, EventArgs e)
         {
-            this.cancel = true;
+            cancel = true;
             cancelButton.Enabled = false;
         }
 
@@ -41,28 +41,28 @@ namespace AssemblyInformation
             try
             {
                 dw = new DependencyWalker();
-                dw.ReferringAssemblyStatusChanged += this.UpdateStatus;
-                this.ReferringAssemblies = dw.FindReferringAssemblies(this.TestAssembly, this.DirectoryPath, this.Recursive);
-                this.UpdateStatus(this, new ReferringAssemblyStatusChangeEventArgs { StatusText = "", Progress = -3 });
+                dw.ReferringAssemblyStatusChanged += UpdateStatus;
+                ReferringAssemblies = dw.FindReferringAssemblies(TestAssembly, DirectoryPath, Recursive);
+                UpdateStatus(this, new ReferringAssemblyStatusChangeEventArgs { StatusText = "", Progress = -3 });
             }
             catch (Exception)
             {
-                this.UpdateStatus(this, new ReferringAssemblyStatusChangeEventArgs { StatusText = Resource.FailedToListBinaries, Progress = -2 });
+                UpdateStatus(this, new ReferringAssemblyStatusChangeEventArgs { StatusText = Resource.FailedToListBinaries, Progress = -2 });
             }
             finally
             {
                 if (null != dw)
                 {
-                    dw.ReferringAssemblyStatusChanged -= this.UpdateStatus;
+                    dw.ReferringAssemblyStatusChanged -= UpdateStatus;
                 }
             }
         }
 
         private void UpdateStatus(object sender, ReferringAssemblyStatusChangeEventArgs e)
         {
-            if (this.InvokeRequired)
+            if (InvokeRequired)
             {
-                this.Invoke(new EventHandler<ReferringAssemblyStatusChangeEventArgs>(this.UpdateStatus), sender, e);
+                Invoke(new EventHandler<ReferringAssemblyStatusChangeEventArgs>(UpdateStatus), sender, e);
                 return;
             }
 
@@ -78,19 +78,19 @@ namespace AssemblyInformation
             }
             else if (e.Progress == -2)
             {
-                this.DialogResult = DialogResult.Cancel;
+                DialogResult = DialogResult.Cancel;
                 MessageBox.Show(Resource.AppName, e.StatusText, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                this.Close();
+                Close();
                 return;
             }
             else if (e.Progress == -3)
             {
-                this.DialogResult = DialogResult.OK;
-                this.Close();
+                DialogResult = DialogResult.OK;
+                Close();
                 return;
             }
 
-            e.Cancel = this.cancel;
+            e.Cancel = cancel;
         }
     }
 }

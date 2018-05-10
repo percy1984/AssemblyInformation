@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Windows.Forms;
@@ -10,13 +9,13 @@ namespace AssemblyInformation
     {
         public AboutBox()
         {
-            this.InitializeComponent();
-            this.Text = String.Format("About {0}", this.AssemblyTitle);
-            this.labelProductName.Text = this.AssemblyProduct;
-            this.labelVersion.Text = String.Format("Version {0}", this.AssemblyVersion);
-            this.labelCopyright.Text = this.AssemblyCopyright;
-            this.labelCompanyName.Text = this.AssemblyCompany;
-            this.textBoxDescription.Text = this.AssemblyDescription;
+            InitializeComponent();
+            Text = $"About {AssemblyTitle}";
+            labelProductName.Text = AssemblyProduct;
+            labelVersion.Text = $"Version {AssemblyVersion}";
+            labelCopyright.Text = AssemblyCopyright;
+            labelCompanyName.Text = AssemblyCompany;
+            textBoxDescription.Text = AssemblyDescription;
         }
 
         #region Assembly Attribute Accessors
@@ -29,7 +28,7 @@ namespace AssemblyInformation
                 if (attributes.Length > 0)
                 {
                     var titleAttribute = (AssemblyTitleAttribute)attributes[0];
-                    if (titleAttribute.Title != "")
+                    if (titleAttribute.Title != string.Empty)
                     {
                         return titleAttribute.Title;
                     }
@@ -39,19 +38,13 @@ namespace AssemblyInformation
             }
         }
 
-        public string AssemblyVersion
-        {
-            get
-            {
-                return Assembly.GetExecutingAssembly().GetName().Version.ToString();
-            }
-        }
+        public string AssemblyVersion => Assembly.GetExecutingAssembly().GetName().Version.ToString();
 
         public string AssemblyDescription
         {
             get
             {
-                return this.GetAssemblyInformation<AssemblyDescriptionAttribute>(attr => attr.Description);
+                return GetAssemblyInformation<AssemblyDescriptionAttribute>(attr => attr.Description);
             }
         }
 
@@ -59,7 +52,7 @@ namespace AssemblyInformation
         {
             get
             {
-                return this.GetAssemblyInformation<AssemblyProductAttribute>(attr => attr.Product);
+                return GetAssemblyInformation<AssemblyProductAttribute>(attr => attr.Product);
             }
         }
 
@@ -67,7 +60,7 @@ namespace AssemblyInformation
         {
             get
             {
-                return this.GetAssemblyInformation<AssemblyCopyrightAttribute>(attr => attr.Copyright);
+                return GetAssemblyInformation<AssemblyCopyrightAttribute>(attr => attr.Copyright);
             }
         }
 
@@ -75,7 +68,7 @@ namespace AssemblyInformation
         {
             get
             {
-                return this.GetAssemblyInformation<AssemblyCompanyAttribute>(attr => attr.Company);
+                return GetAssemblyInformation<AssemblyCompanyAttribute>(attr => attr.Company);
             }
         }
 

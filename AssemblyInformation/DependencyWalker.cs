@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using AssemblyInformation.Model;
 
 namespace AssemblyInformation
 {
@@ -17,19 +18,19 @@ namespace AssemblyInformation
         public IEnumerable<Binary> FindDependencies(AssemblyName assemblyName, bool recursive, out List<string> loadErrors)
         {
             loadErrors = new List<string>();
-            this.assemblyMap.Clear();
-            this.errors.Clear();
+            assemblyMap.Clear();
+            errors.Clear();
             List<Binary> dependencies = new List<Binary>();
 
             Assembly assembly = FindAssembly(assemblyName);
             if (null == assembly)
             {
-                this.errors.Add("Failed to load: " + assemblyName.FullName);
+                errors.Add("Failed to load: " + assemblyName.FullName);
             }
             else
             {
-                this.FindDependencies(assembly, recursive, 0);
-                dependencies.AddRange(this.assemblyMap.Values.OrderBy(p => p.FullName));
+                FindDependencies(assembly, recursive, 0);
+                dependencies.AddRange(assemblyMap.Values.OrderBy(p => p.FullName));
             }
 
             foreach (var dependency in dependencies)
@@ -43,10 +44,10 @@ namespace AssemblyInformation
         public IEnumerable<Binary> FindDependencies(Assembly assembly, bool recursive, out List<string> loadErrors)
         {
             loadErrors = new List<string>();
-            this.assemblyMap.Clear();
-            this.errors.Clear();
-            this.FindDependencies(assembly, recursive, 0);
-            List<Binary> dependencies = new List<Binary>(this.assemblyMap.Values).OrderBy(p => p.FullName).ToList();
+            assemblyMap.Clear();
+            errors.Clear();
+            FindDependencies(assembly, recursive, 0);
+            List<Binary> dependencies = new List<Binary>(assemblyMap.Values).OrderBy(p => p.FullName).ToList();
 
             foreach (var dependency in dependencies)
             {
@@ -62,12 +63,12 @@ namespace AssemblyInformation
             List<string> binaries = new List<string>();
             try
             {
-                this.ReferringAssemblyStatusChanged(this, new ReferringAssemblyStatusChangeEventArgs { StatusText = "Finding all binaries" });
-                this.FindAssemblies(new DirectoryInfo(directory), binaries, recursive);
+                ReferringAssemblyStatusChanged(this, new ReferringAssemblyStatusChangeEventArgs { StatusText = "Finding all binaries" });
+                FindAssemblies(new DirectoryInfo(directory), binaries, recursive);
             }
             catch (Exception)
             {
-                this.UpdateProgress(Resource.FailedToListBinaries, -2);
+                UpdateProgress(Resource.FailedToListBinaries, -2);
                 return null;
             }
 
@@ -92,7 +93,7 @@ namespace AssemblyInformation
                     progress = 99;
                 }
 
-                if (!this.UpdateProgress(message, progress))
+                if (!UpdateProgress(message, progress))
                 {
                     return referringAssemblies;
                 }
@@ -117,7 +118,7 @@ namespace AssemblyInformation
                         referringAssemblies.Add(binary.Remove(0, baseDirPathLength));
                     }
 
-                    this.errors.AddRange(loadErrors);
+                    errors.AddRange(loadErrors);
                 }
                 catch (ArgumentException)
                 {
@@ -215,7 +216,7 @@ namespace AssemblyInformation
         private void FindAssemblies(DirectoryInfo directoryInfo, List<string> binaries, bool recursive)
         {
             string message = string.Format(Resource.AnalyzingFolder, directoryInfo.Name);
-            if (!this.UpdateProgress(message, -1))
+            if (!UpdateProgress(message, -1))
             {
                 return;
             }
@@ -227,7 +228,7 @@ namespace AssemblyInformation
             {
                 foreach (var directory in directoryInfo.GetDirectories())
                 {
-                    this.FindAssemblies(directory, binaries, true);
+                    FindAssemblies(directory, binaries, true);
                 }
             }
         }
@@ -238,16 +239,16 @@ namespace AssemblyInformation
             {
                 string name = referencedAssembly.FullName;
 
-                if (this.assemblyMap.ContainsKey(name))
+                if (assemblyMap.ContainsKey(name))
                 {
                     continue;
                 }
 
-                this.assemblyMap[name] = new Binary(referencedAssembly);
+                assemblyMap[name] = new Binary(referencedAssembly);
 
                 if (AssemblyInformationLoader.SystemAssemblies.Where(p => referencedAssembly.FullName.StartsWith(p)).Count() > 0)
                 {
-                    this.assemblyMap[name].IsSystemBinary = true;
+                    assemblyMap[name].IsSystemBinary = true;
                     continue;
                 }
 
@@ -257,8 +258,8 @@ namespace AssemblyInformation
 
                     if (null != referredAssembly)
                     {
-                        this.assemblyMap[name] = new Binary(referencedAssembly, referredAssembly);
-                        this.FindDependencies(referredAssembly, true, ++level);
+                        assemblyMap[name] = new Binary(referencedAssembly, referredAssembly);
+                        FindDependencies(referredAssembly, true, ++level);
                     }
                 }
             }
@@ -266,10 +267,10 @@ namespace AssemblyInformation
 
         private bool UpdateProgress(string message, int progress)
         {
-            if (null != this.ReferringAssemblyStatusChanged)
+            if (null != ReferringAssemblyStatusChanged)
             {
                 var eventArg = new ReferringAssemblyStatusChangeEventArgs { StatusText = message, Progress = progress };
-                this.ReferringAssemblyStatusChanged(this, eventArg);
+                ReferringAssemblyStatusChanged(this, eventArg);
                 return !eventArg.Cancel;
             }
 
