@@ -1,13 +1,11 @@
-﻿using System.Windows;
-
-namespace AssemblyInformation.View
+﻿namespace AssemblyInformation.View
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for AssemblyInformationV.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class AssemblyInformationV
     {
-        public MainWindow()
+        public AssemblyInformationV()
         {
             InitializeComponent();
         }

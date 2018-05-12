@@ -6,7 +6,7 @@ using System.Reflection;
 
 namespace AssemblyInformation.Model
 {
-    public class AssemblyInformationLoader
+    public class AssemblyInformationLoader : IAssemblyInformationLoader
     {
         public static readonly List<string> SystemAssemblies = new List<string>()
         {
@@ -34,6 +34,7 @@ namespace AssemblyInformation.Model
             PortableExecutableKindsNames[PortableExecutableKinds.Required32Bit] =
                 "Can be run on a 32-bit platform, or in the 32-bit Windows on Windows (WOW) environment on a 64-bit platform.";
             PortableExecutableKindsNames[PortableExecutableKinds.Unmanaged32Bit] = "Contains pure unmanaged code.";
+            PortableExecutableKindsNames[PortableExecutableKinds.Preferred32Bit] = "Platform-agnostic, but 32-bit preferred.";
 
             ImageFileMachineNames[ImageFileMachine.I386] = "Targets a 32-bit Intel processor.";
             ImageFileMachineNames[ImageFileMachine.IA64] = "Targets a 64-bit Intel processor.";

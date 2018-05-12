@@ -1,5 +1,8 @@
 ﻿using System.ComponentModel;
+using System.Reflection;
 using AssemblyInformation.Model;
+using GalaSoft.MvvmLight.CommandWpf;
+using Microsoft.Win32;
 
 namespace AssemblyInformation.ViewModel
 {
@@ -7,17 +10,23 @@ namespace AssemblyInformation.ViewModel
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public bool IsBuildInReleaseMode { get; set; }
-
-        public bool IsOptimized { get; set; }
-
-        public bool IsEditAndContinueEnabled { get; set; }
-
-        public MainWindowVm(AssemblyInformationLoader ail)
+        public RelayCommand LoadAssemblyCommand
         {
-            IsBuildInReleaseMode = !ail.JitTrackingEnabled;
-            IsOptimized = ail.JitOptimized;
-            IsEditAndContinueEnabled = ail.EditAndContinueEnabled;
+            get
+            {
+                return new RelayCommand(() =>
+                {
+                    var fileDialog = new OpenFileDialog();
+
+                    if (fileDialog.ShowDialog() == true)
+                    {
+                        AssemblyInfoVm = new AssemblyInformationVm(new AssemblyInformationLoader(Assembly.LoadFrom(fileDialog.FileName)));
+                    }
+                });
+            }
         }
+
+        public AssemblyInformationVm AssemblyInfoVm { get; private set; }
+
     }
 }
