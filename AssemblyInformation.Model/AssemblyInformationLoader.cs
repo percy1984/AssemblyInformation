@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Versioning;
 
 namespace AssemblyInformation.Model
 {
@@ -72,44 +73,56 @@ namespace AssemblyInformation.Model
 
         private void LoadInformation()
         {
-            var debugAttribute = Assembly.GetCustomAttributes(false).OfType<DebuggableAttribute>().FirstOrDefault();
+            DetermineExecutableKind();
 
+            DetermineDebuggingAttributes();
+
+            AssemblyFullName = Assembly.FullName;
+
+            DetermineFrameworkVersion();
+        }
+
+        private void DetermineExecutableKind()
+        {
             var modules = Assembly.GetModules(false);
-            if (modules.Length > 0)
+            if (modules.Length <= 0) return;
+
+            modules[0].GetPEKind(out var portableExecutableKinds, out var imageFileMachine);
+
+            foreach (PortableExecutableKinds kind in Enum.GetValues(typeof(PortableExecutableKinds)))
             {
-                modules[0].GetPEKind(out var portableExecutableKinds, out var imageFileMachine);
-
-                foreach (PortableExecutableKinds kind in Enum.GetValues(typeof(PortableExecutableKinds)))
+                if ((portableExecutableKinds & kind) == kind && kind != PortableExecutableKinds.NotAPortableExecutableImage)
                 {
-                    if ((portableExecutableKinds & kind) == kind && kind != PortableExecutableKinds.NotAPortableExecutableImage)
+                    if (!String.IsNullOrEmpty(AssemblyKind))
                     {
-                        if (!String.IsNullOrEmpty(AssemblyKind))
-                        {
-                            AssemblyKind += Environment.NewLine;
-                        }
-
-                        AssemblyKind += "- " + PortableExecutableKindsNames[kind];
+                        AssemblyKind += Environment.NewLine;
                     }
-                }
 
-                ////assemblyKindTextBox.Text = PortableExecutableKindsNames[portableExecutableKinds];
-                TargetProcessor = ImageFileMachineNames[imageFileMachine];
-
-                // Any CPU builds are reported as 32bit.
-                // 32bit builds will have more value for PortableExecutableKinds
-                if (imageFileMachine == ImageFileMachine.I386 && portableExecutableKinds == PortableExecutableKinds.ILOnly)
-                {
-                    TargetProcessor = "AnyCPU";
+                    AssemblyKind += "- " + PortableExecutableKindsNames[kind];
                 }
             }
 
+            TargetProcessor = ImageFileMachineNames[imageFileMachine];
+
+            // Any CPU builds are reported as 32bit.
+            // 32bit builds will have more value for PortableExecutableKinds
+            if (imageFileMachine == ImageFileMachine.I386 && portableExecutableKinds == PortableExecutableKinds.ILOnly)
+            {
+                TargetProcessor = "AnyCPU";
+            }
+        }
+
+        private void DetermineDebuggingAttributes()
+        {
+            var debugAttribute = Assembly.GetCustomAttributes(false).OfType<DebuggableAttribute>().FirstOrDefault();
             if (debugAttribute != null)
             {
                 JitTrackingEnabled = debugAttribute.IsJITTrackingEnabled;
                 JitOptimized = !debugAttribute.IsJITOptimizerDisabled;
                 IgnoreSymbolStoreSequencePoints =
                     (debugAttribute.DebuggingFlags &
-                     DebuggableAttribute.DebuggingModes.IgnoreSymbolStoreSequencePoints) != DebuggableAttribute.DebuggingModes.None;
+                     DebuggableAttribute.DebuggingModes.IgnoreSymbolStoreSequencePoints) !=
+                    DebuggableAttribute.DebuggingModes.None;
                 EditAndContinueEnabled =
                     (debugAttribute.DebuggingFlags &
                      DebuggableAttribute.DebuggingModes.EnableEditAndContinue) != DebuggableAttribute.DebuggingModes.None;
@@ -125,10 +138,19 @@ namespace AssemblyInformation.Model
                 EditAndContinueEnabled = false;
                 DebuggingFlags = null;
             }
+        }
 
-            AssemblyFullName = Assembly.FullName;
-
+        private void DetermineFrameworkVersion()
+        {
             FrameworkVersion = Assembly.ImageRuntimeVersion;
+
+            var attributes = Assembly.GetCustomAttributes(true);
+            var targetFrameworkAttribute = attributes.OfType<TargetFrameworkAttribute>().FirstOrDefault();
+
+            if (targetFrameworkAttribute != null)
+            {
+                FrameworkVersion = targetFrameworkAttribute.FrameworkDisplayName;
+            }
         }
     }
 }

@@ -2,7 +2,7 @@ using System.Reflection;
 
 namespace AssemblyInformation
 {
-    internal class Binary
+    public class Binary
     {
         public Binary(AssemblyName assemblyName, string fullPath = null, bool isSystemBinary = false)
         {

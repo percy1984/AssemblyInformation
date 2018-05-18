@@ -41,8 +41,24 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInformationLoader.cs" />
+    <Compile Include="Binary.cs" />
+    <Compile Include="DependencyInformationLoader.cs" />
+    <Compile Include="DependencyWalker.cs" />
     <Compile Include="IAssemblyInformationLoader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ReferenceInfo.cs" />
+    <Compile Include="ReferringAssemblyStatusChangeEventArgs.cs" />
+    <Compile Include="Resource.Designer.cs">
+      <DependentUpon>Resource.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resource.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resource.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

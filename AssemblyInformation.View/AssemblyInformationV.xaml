@@ -24,6 +24,7 @@
                 <RowDefinition />
                 <RowDefinition />
                 <RowDefinition />
+                <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
             <Grid.ColumnDefinitions>
@@ -55,10 +56,42 @@
             <TextBlock
                 Grid.Row="1"
                 Grid.Column="1"
+                VerticalAlignment="Center"
                 Text="{Binding FrameworkVersion}" />
             <Label Grid.Row="2" Grid.Column="0">Assembly Kind:</Label>
+            <TextBlock
+                Grid.Row="2"
+                Grid.Column="1"
+                VerticalAlignment="Center"
+                Text="{Binding AssemblyKind}" />
             <Label Grid.Row="3" Grid.Column="0">Target Processor:</Label>
+            <TextBlock
+                Grid.Row="3"
+                Grid.Column="1"
+                VerticalAlignment="Center"
+                Text="{Binding TargetProcessor}" />
             <Label Grid.Row="4" Grid.Column="0">Full Name</Label>
+            <TextBlock
+                Grid.Row="4"
+                Grid.Column="1"
+                VerticalAlignment="Center"
+                Text="{Binding FullAssemblyName}" />
+            <Label Grid.Row="5" Grid.Column="0">References</Label>
+            <TabControl
+                Grid.Row="5"
+                Grid.Column="1"
+                VerticalAlignment="Center">
+                <TabItem Header="Direct References">
+                    <TreeView ItemsSource="{Binding DirectReferences}" />
+                </TabItem>
+                <TabItem Header="All Direct + Indirect References">
+                    <TreeView ItemsSource="{Binding DirectIndirectReferences}" />
+                </TabItem>
+                <TabItem Header="Referring Assemblies">
+                    <TreeView ItemsSource="{Binding ReferringAssemblies}" />
+                </TabItem>
+            </TabControl>
+
         </Grid>
     </StackPanel>
 </Window>
