@@ -102,7 +102,7 @@ namespace AssemblyInformation
                     {
                         try
                         {
-                            return Assembly.LoadFile((new FileInfo(name)).FullName);
+                            return Assembly.LoadFile(new FileInfo(name).FullName);
                         }
                         catch (ArgumentException)
                         {
